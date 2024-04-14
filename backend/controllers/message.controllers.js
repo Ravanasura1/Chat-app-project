@@ -1,5 +1,7 @@
 import Conversation from "../models/conversation.models.js";
 import Message from "../models/message.models.js";
+import { getReceiverSocketId } from "../socket/socket.js";
+import { io } from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -43,6 +45,12 @@ export const sendMessage = async (req, res) => {
 
     // await conversation.save(); ye ek ke bad ek resolve honge
     // await newMessage.save();
+
+    const receiverSocketId = getReceiverSocketId(receiverId)
+    if(receiverSocketId) {
+      // used to send to message to specific clients
+      io.to(receiverSocketId).emit("newMessage", newMessage)
+    }
 
     // ye parallel dono ko chalayega
 
